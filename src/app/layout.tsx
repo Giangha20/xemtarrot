@@ -1,27 +1,30 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Be_Vietnam_Pro, Cinzel } from 'next/font/google';
+import { Be_Vietnam_Pro, Playfair_Display, Lora } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
 
+// Font không chân tối ưu tuyệt đối cho tiếng Việt
 const beVietnamPro = Be_Vietnam_Pro({
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   subsets: ['vietnamese', 'latin'],
   variable: '--font-sans',
   display: 'swap',
 });
 
+// Font có chân sang trọng, hỗ trợ đầy đủ bộ ký tự và dấu tiếng Việt
 const playfairDisplay = Playfair_Display({
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '600', '700', '800', '900'],
   subsets: ['vietnamese', 'latin'],
   variable: '--font-serif',
   display: 'swap',
 });
 
-const cinzel = Cinzel({
-  weight: ['400', '600', '700', '800', '900'],
-  subsets: ['latin'],
-  variable: '--font-cinzel',
+// Font serif dự phòng chuẩn mực cho văn học và triết lý tiếng Việt
+const lora = Lora({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['vietnamese', 'latin'],
+  variable: '--font-lora',
   display: 'swap',
 });
 
@@ -57,8 +60,16 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`dark scroll-smooth ${beVietnamPro.variable} ${playfairDisplay.variable} ${cinzel.variable}`}
+      className={`dark scroll-smooth ${beVietnamPro.variable} ${playfairDisplay.variable} ${lora.variable}`}
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-[#100B1D] text-[#F5F0FF] antialiased selection:bg-[#D8B56D]/30 selection:text-[#F5F0FF]">
         <Header />
         <div className="flex-1">{children}</div>

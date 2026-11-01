@@ -1,9 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-sans), 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: var(--font-serif), 'Playfair Display', Georgia, Cambria, 'Times New Roman', serif;
-  --font-cinzel: var(--font-cinzel), 'Cinzel', Georgia, serif;
+  --font-sans: var(--font-sans), 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: var(--font-serif), 'Playfair Display', 'Lora', Georgia, 'Times New Roman', serif;
 }
 
 :root {
@@ -15,6 +14,12 @@
   --color-ivory: #F5F0FF;
 }
 
+/* Global Reset & Typography Hardening for Vietnamese */
+html {
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background-color: #100B1D;
   color: #F5F0FF;
@@ -24,15 +29,21 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "liga" 1, "kern" 1;
 }
 
-/* Ensure serif classes always use the beautiful Vietnamese-optimized Playfair Display */
+/* Ensure serif classes always use the Vietnamese-optimized Playfair Display & Lora */
 .font-serif {
   font-family: var(--font-serif);
 }
 
 .font-sans {
   font-family: var(--font-sans);
+}
+
+/* Inputs, textareas, and buttons inherit crisp Vietnamese sans-serif */
+input, textarea, select, button {
+  font-family: inherit;
 }
 
 /* 3D Card Animation Utilities */

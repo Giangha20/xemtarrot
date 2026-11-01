@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-dark-violet: #100B1D;
+    --bg-mystic-violet: #24143F;
+    --color-lavender: #A78BFA;
+    --color-gold: #D8B56D;
+    --color-gold-hover: #E8C882;
+    --color-ivory: #F5F0FF;
+  }
+
+  body {
+    background-color: #100B1D;
+    color: #F5F0FF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 3D Card Animation Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Mystical Gold Glow and Shimmers */
+.gold-glow {
+  box-shadow: 0 0 25px rgba(216, 181, 109, 0.35);
+}
+
+.gold-glow-lg {
+  box-shadow: 0 0 45px rgba(216, 181, 109, 0.55), 0 0 80px rgba(167, 139, 250, 0.25);
+}
+
+.mystic-glow {
+  box-shadow: 0 0 35px rgba(167, 139, 250, 0.35);
+}
+
+.gold-border-gradient {
+  border: 1px solid rgba(216, 181, 109, 0.4);
+  background: linear-gradient(135deg, rgba(36, 20, 63, 0.8) 0%, rgba(16, 11, 29, 0.95) 100%);
+}
+
+.gold-border-card {
+  border: 2px solid #D8B56D;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(216, 181, 109, 0.2);
+}
+
+/* Subtle Starfield & Celestial pulse */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+.animate-float {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #100B1D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #24143F;
+  border-radius: 4px;
+  border: 1px solid rgba(216, 181, 109, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A2366;
 }

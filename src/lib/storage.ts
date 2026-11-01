@@ -35,9 +35,7 @@ export function saveReadingToHistory(reading: ReadingResult): void {
   if (typeof window === 'undefined') return;
   try {
     const history = getReadingsHistory();
-    // Prepend latest reading
     const updated = [reading, ...history];
-    // Keep last 100 readings
     const trimmed = updated.slice(0, 100);
     localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(trimmed));
   } catch (e) {
@@ -91,7 +89,7 @@ export function getUserPreferences(): UserPreferences {
     const raw = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
     if (!raw) return defaultPreferences;
     return { ...defaultPreferences, ...JSON.parse(raw) };
-  } catch (e) {
+  } catch {
     return defaultPreferences;
   }
 }
@@ -103,7 +101,7 @@ export function saveUserPreferences(prefs: Partial<UserPreferences>): UserPrefer
     const updated = { ...current, ...prefs };
     localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(updated));
     return updated;
-  } catch (e) {
+  } catch {
     return defaultPreferences;
   }
 }

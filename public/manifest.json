@@ -1,0 +1,18 @@
+{
+  "name": "MYSTIC TAROT – Tarot & Tử Vi Đẩu Số",
+  "short_name": "MysticTarot",
+  "description": "Website xem bài Tarot & Lập lá số Tử Vi Đẩu Số chuyên nghiệp, hỗ trợ chạy offline không cần mạng.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0516",
+  "theme_color": "#100B1D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["lifestyle", "entertainment", "utilities"]
+}

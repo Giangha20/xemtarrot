@@ -81,6 +81,33 @@ export interface DrawnCard {
   position: SpreadPosition;
 }
 
+export interface CardQuestionAnalysis {
+  cardId: string;
+  cardNameVi: string;
+  isReversed: boolean;
+  positionNameVi: string;
+  directAnswerToQuestion: string; // Câu trả lời cụ thể cho câu hỏi từ lá bài này
+  actionStep: string; // Chỉ dẫn thực tế
+}
+
+export interface DirectQuestionVerdict {
+  verdict: string; // e.g. "CÂU TRẢ LỜI: RẤT KHẢ QUAN & THUẬN LỢI (85%)"
+  confidenceLevel: string; // "Rất Thuận Lợi" | "Cần Thận Trọng" | "Nên Chuyển Hướng" | "Thời Cơ Chín Muồi"
+  directAnswerSummary: string; // 2-3 đoạn văn trả lời trực diện vào băn khoăn của người hỏi
+  keyDecision: string; // Lời khuyên quyết định then chốt
+  timingAdvice: string; // Thời điểm hoặc chu kỳ thích hợp
+}
+
+export interface ReadingSynthesis {
+  directVerdict: DirectQuestionVerdict;
+  cardQuestionAnalyses: CardQuestionAnalysis[];
+  overallSummary: string;
+  elementalBalance: string;
+  coreDynamics: string;
+  actionableAdvice: string;
+  reflectionPrompts: string[];
+}
+
 export interface ReadingResult {
   id: string;
   timestamp: number;
@@ -88,13 +115,7 @@ export interface ReadingResult {
   topic: string;
   spreadType: SpreadType;
   drawnCards: DrawnCard[];
-  synthesis: {
-    overallSummary: string;
-    elementalBalance: string;
-    coreDynamics: string;
-    actionableAdvice: string;
-    reflectionPrompts: string[];
-  };
+  synthesis: ReadingSynthesis;
   isFavorite?: boolean;
   userNotes?: string;
 }

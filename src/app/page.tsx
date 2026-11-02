@@ -62,23 +62,33 @@ export default function HomePage() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2">
           <Link
             href="/reading"
             onClick={() => sound.playChime(660)}
-            className="w-full sm:w-auto px-9 py-4 rounded-full bg-gradient-to-r from-[#D8B56D] via-[#F1D793] to-[#D8B56D] text-[#100B1D] font-serif font-black text-sm sm:text-base tracking-widest uppercase shadow-[0_0_30px_rgba(216,181,109,0.5)] hover:shadow-[0_0_45px_rgba(216,181,109,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-[#D8B56D] via-[#F1D793] to-[#D8B56D] text-[#100B1D] font-serif font-black text-sm tracking-widest uppercase shadow-[0_0_30px_rgba(216,181,109,0.5)] hover:shadow-[0_0_45px_rgba(216,181,109,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
           >
             <Compass className="w-5 h-5 stroke-[2.5]" />
             <span>BẮT ĐẦU TRẢI BÀI</span>
           </Link>
 
           <Link
+            href="/tu-vi"
+            onClick={() => sound.playChime(660)}
+            className="w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-full bg-[#29174A] hover:bg-[#381F66] text-amber-300 border-2 border-amber-500/50 font-serif font-bold text-sm tracking-wider uppercase backdrop-blur-sm shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:border-amber-400 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <Moon className="w-4 h-4 text-amber-400" />
+            <span>LẬP LÁ SỐ TỬ VI</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-black font-extrabold uppercase">Mới</span>
+          </Link>
+
+          <Link
             href="/cards"
             onClick={() => sound.playChime(528)}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/15 font-serif font-bold text-sm tracking-wider uppercase backdrop-blur-sm hover:border-[#D8B56D]/50 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/15 font-serif font-bold text-sm tracking-wider uppercase backdrop-blur-sm hover:border-[#D8B56D]/50 transition-all flex items-center justify-center gap-2"
           >
-            <Layers className="w-5 h-5 text-[#A78BFA]" />
-            <span>KHÁM PHÁ 78 LÁ BÀI</span>
+            <Layers className="w-4 h-4 text-[#A78BFA]" />
+            <span>BỘ BÀI 78 LÁ</span>
           </Link>
         </div>
 

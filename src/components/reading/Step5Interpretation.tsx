@@ -14,7 +14,12 @@ import {
   Compass,
   Layers,
   HelpCircle,
-  Share2
+  Share2,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Flame,
+  ArrowRight
 } from 'lucide-react';
 
 interface Step5InterpretationProps {
@@ -43,16 +48,20 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
 
   const handleCopyReading = () => {
     sound.playChime(528);
-    let text = `🔮 MYSTIC TAROT – KẾT QUẢ TRẢI BÀI\n`;
-    text += `Câu hỏi: ${reading.question} (${reading.topic})\n`;
-    text += `Phương pháp: ${reading.spreadType}\n\n`;
+    let text = `🔮 MYSTIC TAROT – KẾT QUẢ GIẢI ĐÁP CHI TIẾT\n`;
+    text += `❓ Câu hỏi: ${reading.question} (${reading.topic})\n`;
+    if (reading.synthesis?.directVerdict) {
+      text += `🎯 Kết luận trực diện: ${reading.synthesis.directVerdict.verdict}\n`;
+      text += `⚡ Quyết định then chốt: ${reading.synthesis.directVerdict.keyDecision}\n`;
+      text += `⏳ Thời điểm thích hợp: ${reading.synthesis.directVerdict.timingAdvice}\n\n`;
+    }
     text += `🌟 CÁC LÁ BÀI RÚT ĐƯỢC:\n`;
     reading.drawnCards.forEach((dc, i) => {
       text += `${i + 1}. [${dc.position.nameVi}]: ${dc.card.nameVi} (${dc.isReversed ? 'Ngược' : 'Xuôi'})\n`;
     });
     text += `\n✨ TỔNG QUAN NĂNG LƯỢNG:\n${reading.synthesis.overallSummary}\n\n`;
-    text += `🧭 LỜI KHUYÊN HÀNH ĐỘNG:\n${reading.synthesis.actionableAdvice}\n\n`;
-    text += `https://mystictarot.vn`;
+    text += `🧭 CHỈ DẪN HÀNH ĐỘNG:\n${reading.synthesis.actionableAdvice}\n\n`;
+    text += `https://xemtarrot.vercel.app`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
@@ -60,6 +69,9 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
       setTimeout(() => setIsCopied(false), 2500);
     }
   };
+
+  const directVerdict = reading.synthesis?.directVerdict;
+  const cardAnalyses = reading.synthesis?.cardQuestionAnalyses || [];
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-500 pb-12">
@@ -109,6 +121,58 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
         </div>
       </div>
 
+      {/* MỤC TRẢ LỜI TRỰC DIỆN CÂU HỎI (DIRECT QUESTION ANSWER BOX) */}
+      {directVerdict && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#1E0F33] via-[#160B29] to-[#0E071C] border-2 border-[#D8B56D] shadow-[0_0_35px_rgba(216,181,109,0.35)] space-y-6 relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D8B56D]/30 pb-4">
+            <div className="flex items-center gap-2.5">
+              <span className="p-2 rounded-xl bg-[#D8B56D] text-black">
+                <Flame className="w-5 h-5" />
+              </span>
+              <div>
+                <span className="text-[11px] font-sans font-bold text-[#A78BFA] uppercase tracking-wider block">
+                  TRẢ LỜI TRỰC DIỆN VẤN ĐỀ CỦA BẠN
+                </span>
+                <h3 className="font-serif text-lg sm:text-xl font-black text-[#D8B56D]">
+                  {directVerdict.verdict}
+                </h3>
+              </div>
+            </div>
+
+            <span className="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-[#24143F] border border-[#D8B56D]/50 text-amber-300 font-bold text-xs flex items-center gap-1.5 shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              Trạng thái: {directVerdict.confidenceLevel}
+            </span>
+          </div>
+
+          {/* Detailed Paragraph Breakdown */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#0F081C]/90 border border-white/10 text-slate-200 text-sm leading-relaxed whitespace-pre-line space-y-3 font-sans">
+            {directVerdict.directAnswerSummary}
+          </div>
+
+          {/* Key Decision & Timing guidance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-[#24143F]/60 border border-[#D8B56D]/30 space-y-1.5">
+              <span className="text-xs font-serif font-bold text-[#D8B56D] flex items-center gap-1.5 uppercase">
+                <ArrowRight className="w-4 h-4 text-[#D8B56D]" /> Quyết Định Then Chốt:
+              </span>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {directVerdict.keyDecision}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[#1A102E]/60 border border-[#A78BFA]/30 space-y-1.5">
+              <span className="text-xs font-serif font-bold text-[#A78BFA] flex items-center gap-1.5 uppercase">
+                <Clock className="w-4 h-4 text-[#A78BFA]" /> Thời Điểm Hành Động Tối Ưu:
+              </span>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {directVerdict.timingAdvice}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SPREAD CARDS DISPLAY SECTION */}
       <div className="space-y-4">
         <div className="text-center space-y-1">
@@ -146,7 +210,7 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
                 showDetailsButton={true}
               />
 
-              <p className="text-[11px] text-slate-400 max-w-[160px] line-clamp-2">
+              <p className="text-[11px] text-slate-400 max-w-[160px] line-clamp-2 font-sans">
                 {drawnCard.position.descriptionVi}
               </p>
             </div>
@@ -161,7 +225,7 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
           <div className="flex items-center gap-2 text-xs font-serif font-bold text-[#D8B56D] uppercase tracking-wider">
             <Compass className="w-4 h-4 text-[#D8B56D]" /> Tổng Quan Trải Bài & Bức Tranh Toàn Cảnh
           </div>
-          <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
+          <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line font-sans">
             {reading.synthesis.overallSummary}
           </p>
         </div>
@@ -171,7 +235,7 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
           <div className="flex items-center gap-2 text-xs font-serif font-bold text-[#A78BFA] uppercase tracking-wider">
             <Layers className="w-4 h-4 text-[#A78BFA]" /> Cân Bằng Nguyên Tố
           </div>
-          <p className="text-slate-300 text-xs leading-relaxed">
+          <p className="text-slate-300 text-xs leading-relaxed font-sans">
             {reading.synthesis.elementalBalance}
           </p>
         </div>
@@ -179,71 +243,76 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
 
       {/* CARD-BY-CARD DEEP BREAKDOWN ALIGNED WITH QUESTION */}
       <div className="space-y-4">
-        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#F5F0FF] text-center">
-          PHÂN TÍCH CHI TIẾT TỪNG LÁ BÀI THEO BỐI CẢNH CÂU HỎI
-        </h3>
+        <div className="text-center space-y-1">
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#F5F0FF]">
+            Ý NGHĨA TỪNG LÁ BÀI ỨNG VÀO CÂU HỎI CỦA BẠN
+          </h3>
+          <p className="text-xs text-slate-400 max-w-xl mx-auto font-sans">
+            Giải mã chi tiết từng vị trí lá bài, giải thích cụ thể lá bài đó đang trả lời điều gì cho câu hỏi: "{reading.question}".
+          </p>
+        </div>
 
         <div className="space-y-4">
           {reading.drawnCards.map((drawnCard, idx) => {
             const card = drawnCard.card;
             const isRev = drawnCard.isReversed;
             const content = isRev ? card.reversed : card.upright;
-
-            // Pick contextual interpretation based on question topic
-            let topicText = content.general;
-            if (reading.topic.includes('Tình') || reading.topic.includes('Yêu')) {
-              topicText = content.love;
-            } else if (reading.topic.includes('Công') || reading.topic.includes('Sự nghiệp')) {
-              topicText = content.career;
-            } else if (reading.topic.includes('Tài') || reading.topic.includes('Tiền')) {
-              topicText = content.finance;
-            } else if (reading.topic.includes('Gia đình')) {
-              topicText = content.family;
-            } else if (reading.topic.includes('Bản thân')) {
-              topicText = content.personalGrowth;
-            }
+            const analysis = cardAnalyses[idx];
 
             return (
               <div
                 key={idx}
-                className="p-5 sm:p-6 rounded-2xl bg-black/40 border border-white/10 hover:border-[#D8B56D]/40 transition-colors space-y-3"
+                className="p-5 sm:p-6 rounded-2xl bg-[#140C24] border-2 border-white/10 hover:border-[#D8B56D]/50 transition-all space-y-4 shadow-lg"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="w-6 h-6 rounded-full bg-[#24143F] border border-[#D8B56D]/50 text-[#D8B56D] text-xs font-serif font-bold flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-full bg-[#24143F] border border-[#D8B56D] text-[#D8B56D] text-xs font-serif font-bold flex items-center justify-center shadow-sm">
                       {idx + 1}
                     </span>
                     <h4 className="font-serif text-base sm:text-lg font-bold text-[#F5F0FF]">
-                      {drawnCard.position.nameVi}: {card.nameVi}
+                      {drawnCard.position.nameVi}: <span className="text-[#D8B56D]">{card.nameVi}</span>
                     </h4>
                   </div>
 
                   <span
-                    className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium self-start sm:self-auto ${
+                    className={`text-[11px] px-3 py-1 rounded-full font-medium self-start sm:self-auto font-sans ${
                       isRev
-                        ? 'bg-rose-950/80 text-rose-300 border border-rose-500/40'
-                        : 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
+                        ? 'bg-rose-950 text-rose-300 border border-rose-500/40'
+                        : 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
                     }`}
                   >
                     {isRev ? 'Lá Ngược (Reversed)' : 'Lá Xuôi (Upright)'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs sm:text-sm">
+                {/* Question-Specific Interpretation */}
+                <div className="p-4 rounded-xl bg-[#1E1136] border border-[#D8B56D]/30 space-y-2">
+                  <span className="text-xs font-serif font-bold text-amber-300 flex items-center gap-1.5 uppercase">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Ý Nghĩa Cụ Thể Ứng Vào Câu Hỏi Của Bạn:
+                  </span>
+                  <p className="text-slate-100 text-xs sm:text-sm leading-relaxed font-sans">
+                    {analysis?.directAnswerToQuestion || `Ứng vào câu hỏi "${reading.question}", tại vị trí [${drawnCard.position.nameVi}], lá ${card.nameVi} mang thông điệp: ${content.keyMessage}.`}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs sm:text-sm font-sans">
                   <div className="md:col-span-8 space-y-2">
                     <p className="text-slate-300 leading-relaxed">
-                      <strong className="text-[#D8B56D]">Ý nghĩa tại vị trí này: </strong>
+                      <strong className="text-[#A78BFA]">Biểu tượng & Thông điệp gốc: </strong>
                       {content.keyMessage}
                     </p>
                     <p className="text-slate-400 leading-relaxed">
-                      <strong className="text-slate-200">Liên hệ với chủ đề {reading.topic}: </strong>
-                      {topicText}
+                      <strong className="text-slate-300">Khía cạnh {reading.topic}: </strong>
+                      {content.general}
                     </p>
                   </div>
 
-                  <div className="md:col-span-4 p-3 rounded-xl bg-white/5 border border-white/5 space-y-1 text-xs">
-                    <span className="font-bold text-[#A78BFA] block">Lời khuyên cụ thể:</span>
-                    <p className="text-slate-300 italic">{content.advice}</p>
+                  <div className="md:col-span-4 p-3.5 rounded-xl bg-white/5 border border-white/5 space-y-1.5 text-xs">
+                    <span className="font-bold text-emerald-400 block flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Chỉ dẫn hành động:
+                    </span>
+                    <p className="text-slate-200 italic">{content.advice}</p>
                     <button
                       onClick={() => {
                         setSelectedCardForModal({
@@ -269,16 +338,16 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
           <h3 className="font-serif text-lg sm:text-xl font-bold text-[#D8B56D] flex items-center gap-2 mb-2">
             <Sparkles className="w-5 h-5 text-[#D8B56D]" /> Mối Tương Tác & Lời Khuyên Hành Động
           </h3>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4 font-sans">
             {reading.synthesis.coreDynamics}
           </p>
         </div>
 
         <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block">
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block font-sans">
             Chỉ Dẫn Ứng Dụng Thực Tiễn:
           </span>
-          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
+          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line font-sans">
             {reading.synthesis.actionableAdvice}
           </p>
         </div>
@@ -289,7 +358,7 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
         <h4 className="font-serif text-base font-bold text-[#A78BFA] flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-[#A78BFA]" /> 3 Câu Hỏi Tự Soi Chiếu Dành Riêng Cho Bạn
         </h4>
-        <div className="space-y-2 text-xs sm:text-sm text-purple-100">
+        <div className="space-y-2 text-xs sm:text-sm text-purple-100 font-sans">
           {reading.synthesis.reflectionPrompts.map((prompt, i) => (
             <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-white/5 border border-white/5">
               <span className="font-bold text-[#D8B56D]">{i + 1}.</span>
@@ -310,7 +379,7 @@ export const Step5Interpretation: React.FC<Step5InterpretationProps> = ({
 
         <button
           onClick={handleCopyReading}
-          className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-bold tracking-wide uppercase flex items-center justify-center gap-2 transition-all"
+          className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-bold tracking-wide uppercase flex items-center justify-center gap-2 transition-all font-sans"
         >
           <Share2 className="w-4 h-4" /> Chia Sẻ Trải Bài
         </button>

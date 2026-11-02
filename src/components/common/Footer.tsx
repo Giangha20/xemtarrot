@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Shield, Heart, Compass, BookOpen, Layers } from 'lucide-react';
+import { Sparkles, Shield, Heart, Compass, BookOpen, Layers, Moon } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
             </span>
           </div>
           <p className="text-slate-400 text-xs leading-relaxed">
-            Hệ thống trải bài Tarot chuyên nghiệp, kết hợp tri thức cổ xưa của bộ bài Rider-Waite-Smith 1909 với nghệ thuật tự vấn và thấu hiểu tâm lý hiện đại.
+            Hệ thống trải bài Tarot & Tử Vi Đẩu Số chuyên nghiệp, kết hợp tri thức cổ xưa phương Đông và phương Tây với nghệ thuật thấu hiểu tâm lý hiện đại.
           </p>
         </div>
 
@@ -32,6 +32,11 @@ export const Footer: React.FC = () => {
             <li>
               <Link href="/reading" className="hover:text-[#D8B56D] transition-colors flex items-center gap-1.5">
                 <Compass className="w-3.5 h-3.5 text-[#D8B56D]" /> Bắt Đầu Trải Bài
+              </Link>
+            </li>
+            <li>
+              <Link href="/tu-vi" className="hover:text-[#D8B56D] transition-colors flex items-center gap-1.5 text-amber-300 font-semibold">
+                <Moon className="w-3.5 h-3.5 text-amber-400" /> Lập Lá Số Tử Vi (Mới)
               </Link>
             </li>
             <li>
@@ -58,30 +63,38 @@ export const Footer: React.FC = () => {
             Các Kiểu Trải Bài
           </h4>
           <ul className="space-y-1.5 text-slate-400">
-            <li>Trải Bài 1 Lá (Thông điệp ngày)</li>
-            <li>Trải Bài 3 Lá (Quá khứ – Hiện tại – Tương lai)</li>
-            <li>Trải Bài Tình Yêu (5 lá chuyên sâu)</li>
-            <li>Trải Bài Công Việc & Sự Nghiệp (5 lá)</li>
-            <li>Trải Bài Thập Tự Celtic (Celtic Cross 10 lá)</li>
+            <li>• Trải bài 1 lá – Thông điệp hàng ngày</li>
+            <li>• Trải bài 3 lá – Quá khứ, Hiện tại, Tương lai</li>
+            <li>• Trải bài Tình yêu 5 lá – Soi tỏ kết nối</li>
+            <li>• Trải bài Sự nghiệp 5 lá – Chiến lược bứt phá</li>
+            <li>• Thập Tự Celtic 10 lá – Chiều sâu vận mệnh</li>
           </ul>
         </div>
 
-        {/* Col 4: Ethical Disclaimer */}
-        <div className="space-y-2.5 p-4 rounded-xl bg-[#100B1D] border border-white/5">
+        {/* Col 4: Ethics & Philosophy */}
+        <div className="space-y-2.5">
           <h4 className="font-serif font-bold text-[#D8B56D] text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <Shield className="w-4 h-4 text-emerald-400" /> Tuyên Bố Trách Nhiệm
+            <Shield className="w-3.5 h-3.5 text-[#D8B56D]" /> Tuyên Ngôn Đạo Đức
           </h4>
-          <p className="text-[11px] leading-relaxed text-slate-400">
-            Tarot là công cụ hỗ trợ suy ngẫm, kết nối trực giác và khám phá bản thân. Chúng tôi không đưa ra những lời phán đoán tương lai bất biến, và không thay thế lời khuyên y tế, pháp lý hoặc tài chính chuyên môn. Tự do ý chí của bạn là tối thượng.
+          <p className="text-slate-400 leading-relaxed text-[11px]">
+            Tarot và Tử Vi là tấm gương soi chiếu nội tâm và bản đồ tiềm năng, không phán xét cố định số phận. Quyền năng tối cao luôn thuộc về sự tự do ý chí và lòng thiện lương của chính bạn.
           </p>
+          <div className="pt-1 flex items-center gap-1 text-[11px] text-[#A78BFA]">
+            <Heart className="w-3 h-3 text-rose-400" />
+            <span>Phát triển vì sự bình an và khai sáng</span>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-        <p>© 2026 MYSTIC TAROT. Rider-Waite-Smith System (1909 Public Domain).</p>
-        <p className="flex items-center gap-1 text-slate-400">
-          Được thiết kế với <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> cho hành trình chữa lành tâm hồn.
-        </p>
+      <div className="max-w-7xl mx-auto pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
+        <p>© 2026 MYSTIC TAROT. Đã đăng ký bản quyền. Phát triển cho cộng đồng yêu thích Tarot & Tử Vi.</p>
+        <div className="flex items-center gap-4 text-slate-400">
+          <Link href="/about" className="hover:text-white transition-colors">Về chúng tôi</Link>
+          <span>•</span>
+          <Link href="/knowledge" className="hover:text-white transition-colors">Điều khoản & Đạo đức</Link>
+          <span>•</span>
+          <Link href="/reading" className="hover:text-white transition-colors">Trải bài ngay</Link>
+        </div>
       </div>
     </footer>
   );

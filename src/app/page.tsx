@@ -183,6 +183,41 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* 2.5 SECTION TỬ VI ĐẨU SỐ ĐÔNG PHƯƠNG */}
+      <section className="relative z-10 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-[#201038] via-[#160B29] to-[#0E061B] border-2 border-[#D8B56D]/60 shadow-[0_0_50px_rgba(216,181,109,0.3)] flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#10071D] border border-amber-400/40 text-amber-300 text-xs font-serif font-bold uppercase tracking-wider">
+              <Moon className="w-3.5 h-3.5 text-amber-400" /> TÍNH NĂNG MỚI: TỬ VI ĐẨU SỐ ĐÔNG PHƯƠNG
+            </div>
+            <h2 className="font-serif text-2xl sm:text-4xl font-black text-[#F5F0FF] leading-snug">
+              LẬP LÁ SỐ & LUẬN GIẢI 12 CUNG TRỌN ĐỜI
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
+              Kết hợp hoàn hảo giữa thông điệp trực giác phương Tây (Tarot 78 lá) và bản đồ thiên mệnh phương Đông (Tử Vi Đẩu Số). An chuẩn xác 14 chính tinh, ngũ hành nạp âm, Mệnh – Cục tương quan và dự báo vận hạn năm 2026.
+            </p>
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-[#A78BFA] font-medium pt-1">
+              <span>✦ Bàn đồ lá số 4x4 truyền thống</span>
+              <span>•</span>
+              <span>✦ Luận giải chi tiết 12 Cung</span>
+              <span>•</span>
+              <span>✦ Miễn phí 100%</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <Link
+              href="/tu-vi"
+              onClick={() => sound.playChime(660)}
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black font-serif font-black text-sm tracking-widest uppercase shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <Moon className="w-4 h-4 fill-black text-black" />
+              <span>LẬP LÁ SỐ TỬ VI NGAY</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* 3. CÁC MỤC GIỚI THIỆU: TAROT LÀ GÌ & KHÁM PHÁ ĐIỀU GÌ */}
       <section className="relative z-10 py-16 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
         <div className="text-center space-y-3">

@@ -42,20 +42,16 @@ export function drawCardsForSpread(
   let selectedCards: TarotCard[] = [];
   
   if (chosenCardIds && chosenCardIds.length >= count) {
-    // User picked specific cards
     selectedCards = chosenCardIds
       .slice(0, count)
       .map((id) => TAROT_CARDS.find((c) => c.id === id)!)
       .filter(Boolean);
   } else {
-    // Random draw
     const shuffled = shuffleDeck(TAROT_CARDS);
     selectedCards = shuffled.slice(0, count);
   }
 
-  // Assign positions and reversed flags
   return selectedCards.map((card, idx) => {
-    // Random reversed status if allowed (approx 35% chance)
     const isReversed = allowReversed ? Math.random() < 0.35 : false;
     return {
       card,
@@ -80,7 +76,8 @@ function generateDirectQuestionVerdict(
   topic: string,
   drawnCards: DrawnCard[]
 ): DirectQuestionVerdict {
-  const qLower = (question || '').toLowerCase().trim();
+  const qClean = (question || '').trim();
+  const qLower = qClean.toLowerCase();
   const tLower = (topic || '').toLowerCase();
 
   // 1. Calculate spread positive/challenging weight
@@ -121,86 +118,121 @@ function generateDirectQuestionVerdict(
   const favorablePercent = Math.min(95, Math.max(15, Math.round((positiveScore / (totalScore || 1)) * 100)));
 
   // 2. Identify question nature
-  const isDecision = qLower.includes('có nên') || qLower.includes('nên hay') || qLower.includes('chọn') || qLower.includes('được không') || qLower.includes('liệu có');
+  const isDecision = qLower.includes('có nên') || qLower.includes('nên hay') || qLower.includes('chọn') || qLower.includes('được không') || qLower.includes('liệu có') || qLower.includes('thành công không');
   const isLove = qLower.includes('người yêu') || qLower.includes('tình cảm') || qLower.includes('quay lại') || qLower.includes('chia tay') || qLower.includes('crush') || qLower.includes('kết hôn') || tLower.includes('tình');
   const isCareer = qLower.includes('công việc') || qLower.includes('chuyển việc') || qLower.includes('xin việc') || qLower.includes('thăng tiến') || qLower.includes('sếp') || qLower.includes('công ty') || tLower.includes('công') || tLower.includes('sự nghiệp');
   const isFinance = qLower.includes('tiền') || qLower.includes('tài chính') || qLower.includes('đầu tư') || qLower.includes('bất động sản') || qLower.includes('chứng khoán') || qLower.includes('nợ') || tLower.includes('tài');
-  const isTiming = qLower.includes('khi nào') || qLower.includes('bao giờ') || qLower.includes('thời điểm') || qLower.includes('sắp tới') || qLower.includes('tháng') || qLower.includes('năm');
 
-  // Lead card and final card determine momentum
   const outcomeCard = drawnCards[drawnCards.length - 1];
   const leadCard = drawnCards[0];
-
-  let verdict = '';
-  let confidenceLevel = '';
-  let keyDecision = '';
-  let timingAdvice = '';
-
-  if (favorablePercent >= 70) {
-    confidenceLevel = 'Rất Thuận Lợi';
-    if (isDecision) {
-      verdict = `CÂU TRẢ LỜI: NÊN TIẾN HÀNH (Khả năng thuận lợi cao ~${favorablePercent}%)`;
-      keyDecision = `Vũ trụ gửi tín hiệu đèn xanh. Bạn hãy mạnh dạn xúc tiến kế hoạch đã ấp ủ, năng lượng tích cực từ lá ${outcomeCard.card.nameVi} sẽ che chở cho bước đi của bạn.`;
-    } else if (isLove) {
-      verdict = `CÂU TRẢ LỜI: TÍN HIỆU RẤT TÍCH CỰC & GẮN KẾT (~${favorablePercent}%)`;
-      keyDecision = `Mối quan hệ này có nền tảng cảm xúc chân thành. Hãy cởi mở chia sẻ sự chân thật và lòng tin để đón nhận tình cảm trọn vẹn.`;
-    } else if (isCareer) {
-      verdict = `CÂU TRẢ LỜI: CƠ HỘI ĐỘT PHÁ & THĂNG TIẾN (~${favorablePercent}%)`;
-      keyDecision = `Con đường nghề nghiệp đang mở rộng. Nỗ lực và kỹ năng thực chất của bạn sẽ được ghi nhận và tưởng thưởng xứng đáng.`;
-    } else {
-      verdict = `CÂU TRẢ LỜI: THUẬN LỢI & HANH THÔNG (~${favorablePercent}%)`;
-      keyDecision = `Dòng năng lượng vũ trụ đang ủng hộ bạn. Hãy tự tin vào trực giác và tiếp tục vững bước.`;
-    }
-    timingAdvice = `Thời điểm vàng đang nằm trong khoảng 2 đến 6 tuần tới. Hành động sớm khi tinh thần và cơ hội đang cộng hưởng tốt nhất.`;
-  } else if (favorablePercent <= 40) {
-    confidenceLevel = 'Cần Thận Trọng & Tạm Hoãn';
-    if (isDecision) {
-      verdict = `CÂU TRẢ LỜI: CHƯA NÊN TIẾN HÀNH NGAY (Cảnh báo rủi ro cao ~${100 - favorablePercent}%)`;
-      keyDecision = `Hiện tại chưa phải thời điểm chín muồi. Lá bài cảnh báo có những góc khuất hoặc rủi ro tiềm ẩn bạn chưa nhìn thấy hết. Hãy tạm dừng để rà soát.`;
-    } else if (isLove) {
-      verdict = `CÂU TRẢ LỜI: CẦN KHOẢNG LẶNG ĐỂ TỰ CHỮA LÀNH`;
-      keyDecision = `Đừng vội vàng gượng ép hay tìm kiếm câu trả lời ngay lúc này. Sự nóng vội có thể gây thêm rạn nứt. Hãy học cách yêu thương chính mình trước.`;
-    } else if (isCareer) {
-      verdict = `CÂU TRẢ LỜI: NÊN CỦNG CỐ, TRÁNH MẠO HIỂM LÚC NÀY`;
-      keyDecision = `Chưa nên mạo hiểm nhảy việc hay rót vốn lớn. Môi trường mới có thể mang theo nhiều áp lực ngoài dự tính. Hãy củng cố vị thế hiện tại.`;
-    } else {
-      verdict = `CÂU TRẢ LỜI: CẦN THẬN TRỌNG & TỰ SOI CHIẾU`;
-      keyDecision = `Có những khúc mắc tâm lý hoặc tác động ngoại cảnh bất lợi cần được tháo gỡ từng bước thay vì hành động hấp tấp.`;
-    }
-    timingAdvice = `Hãy dành ít nhất 1 chu kỳ trăng (khoảng 3-4 tuần) để tĩnh tâm, quan sát và thu thập thêm dữ kiện trước khi đưa ra phán quyết sau cùng.`;
-  } else {
-    confidenceLevel = 'Chuyển Biến Tùy Thuộc Vào Quyết Định Của Bạn';
-    verdict = `CÂU TRẢ LỜI: CƠ HỘI VÀ THỬ THÁCH SONG HÀNH (~${favorablePercent}%)`;
-    keyDecision = `Kết quả phụ thuộc trực tiếp vào cách bạn đối diện với trở ngại. Nếu dũng cảm sửa đổi thói quen cũ và giữ vững lý trí, tình hình sẽ xoay chuyển theo hướng tốt đẹp.`;
-    timingAdvice = `Khoảng 1 đến 2 tháng tới sẽ là giai đoạn bước ngoặt, đòi hỏi bạn phải có chiến lược rõ ràng và kiên định.`;
-  }
-
-  // 3. Formulate deep textual response answering the exact question
-  const qDisplay = question && question.trim().length > 3 ? `"${question}"` : 'câu hỏi bạn đang trăn trở';
-  
   const leadCardName = `${leadCard.card.nameVi} (${leadCard.isReversed ? 'chiều Ngược' : 'chiều Xuôi'})`;
   const outcomeCardName = `${outcomeCard.card.nameVi} (${outcomeCard.isReversed ? 'chiều Ngược' : 'chiều Xuôi'})`;
 
-  const directAnswerSummary = `Về câu hỏi cụ thể của bạn: ${qDisplay}
+  let verdict = '';
+  let confidenceLevel = '';
+  let signalColor: 'green' | 'yellow' | 'red' = 'green';
+  let signalLabel = '';
+  let coreReason = '';
+  let keyDecision = '';
+  let whatToAvoid = '';
+  let timingAdvice = '';
 
-1. TRỰC DIỆN BẢN CHẤT VẤN ĐỀ:
-Bộ bài cho thấy câu hỏi này xuất phát từ một nhu cầu nội tâm sâu sắc, bắt nguồn từ năng lượng của lá ${leadCardName}. Bạn đang không chỉ tìm kiếm một kết quả đơn thuần mà đang tìm kiếm sự giải phóng khỏi cảm giác bất an hoặc do dự bấy lâu. Năng lượng phản chiếu cho thấy bối cảnh hiện tại có sự đan xen giữa mong muốn cá nhân và những tác động đa chiều từ hoàn cảnh xung quanh.
+  if (favorablePercent >= 65) {
+    confidenceLevel = 'Rất Thuận Lợi';
+    signalColor = 'green';
+    signalLabel = 'Tín Hiệu Đèn Xanh: Thuận Lợi Tối Đa';
 
-2. CÂU TRẢ LỜI RÕ RÀNG CHO BĂN KHOĂN CỦA BẠN:
-Ứng vào thắc mắc của bạn, kết quả trải bài ${favorablePercent >= 70 ? 'đang mở ra hướng đi rất sáng sủa và tích cực' : favorablePercent <= 40 ? 'cho thấy bạn đang đối diện với những nút thắt cần giải quyết trước khi có thể đạt được điều mong muốn' : 'cho thấy tình thế đang ở thế cân bằng động, kết quả cuối cùng hoàn toàn nằm ở sự dứt khoát và trí tuệ của chính bạn'}. 
+    if (isDecision) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: NÊN TIẾN HÀNH (Xác suất thuận lợi ~${favorablePercent}%)`;
+      coreReason = `Năng lượng bảo hộ từ lá ${outcomeCardName} chỉ ra rằng hành động dứt khoát lúc này sẽ mang lại kết quả vượt kỳ vọng. Hoàn cảnh xung quanh đang ủng hộ bước đi của bạn.`;
+      keyDecision = `Hãy dũng cảm hiện thực hóa kế hoạch đã ấp ủ, đừng để sự chần chừ làm trôi qua thời cơ tốt.`;
+    } else if (isLove) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: TÍN HIỆU RẤT TÍCH CỰC & GẮN KẾT (~${favorablePercent}%)`;
+      coreReason = `Năng lượng cảm xúc chân thành đang hội tụ mạnh mẽ. Người ấy có thiện chí và sự quan tâm sâu sắc dành cho bạn.`;
+      keyDecision = `Hãy cởi mở bày tỏ cảm xúc chân thật, chủ động kết nối để phá vỡ khoảng cách.`;
+    } else if (isCareer) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CƠ HỘI ĐỘT PHÁ & THĂNG TIẾN RÕ RỆT (~${favorablePercent}%)`;
+      coreReason = `Nỗ lực và tài năng của bạn đang chuẩn bị gặt hái trái ngọt. Môi trường mới hoặc dự án mới sẽ mở ra chân trời phát triển vượt bậc.`;
+      keyDecision = `Tập trung hoàn thiện kỹ năng chuyên môn và nắm bắt cơ hội dẫn đầu khi nó xuất hiện.`;
+    } else if (isFinance) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CƠ HỘI SINH LỜI KHẢ QUAN (~${favorablePercent}%)`;
+      coreReason = `Dòng tiền và tiềm năng tài chính đang mở rộng theo chiều hướng đi lên vững chắc.`;
+      keyDecision = `Có thể cân nhắc giải ngân hoặc mở rộng kinh doanh dựa trên kế hoạch chi tiết.`;
+    } else {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: THUẬN LỢI & HANH THÔNG (~${favorablePercent}%)`;
+      coreReason = `Vũ trụ gửi tín hiệu hanh thông, mọi nút thắt đang dần được tháo gỡ tự nhiên.`;
+      keyDecision = `Giữ vững niềm tin, tiếp tục hành động kiên trì theo định hướng đã chọn.`;
+    }
 
-3. ĐIỂM TỰA VÀ ĐÍCH ĐẾN:
-Lá bài chỉ báo kết quả hoặc bến đỗ sau cùng là ${outcomeCardName}. ${
-    outcomeCard.isReversed 
-      ? `Lá bài ở trạng thái Ngược nhắc nhở bạn rằng nếu bạn không chủ động chuyển hóa sự tắc nghẽn này, tình huống có thể kéo dài sự mệt mỏi. ${outcomeCard.card.reversed.advice}`
-      : `Lá bài ở trạng thái Xuôi khẳng định một tương lai có hậu và vững chãi, miễn là bạn làm theo chỉ dẫn: ${outcomeCard.card.upright.advice}`
-  }`;
+    whatToAvoid = `Tránh chần chừ, do dự quá lâu hoặc lắng nghe quá nhiều ý kiến tiêu cực từ những người ngoài cuộc không hiểu rõ bản chất vấn đề.`;
+    timingAdvice = `Thời điểm vàng hành động là trong vòng 2 đến 5 tuần tới. Khi trực giác mách bảo, hãy quyết đoán bước tới.`;
+  } else if (favorablePercent <= 40) {
+    confidenceLevel = 'Cần Thận Trọng & Tạm Hoãn';
+    signalColor = 'red';
+    signalLabel = 'Tín Hiệu Đèn Đỏ: Cảnh Báo Rủi Ro Cao';
+
+    if (isDecision) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CHƯA NÊN TIẾN HÀNH LÚC NÀY (Rủi ro tiềm ẩn ~${100 - favorablePercent}%)`;
+      coreReason = `Sự xuất hiện của các lá bài cảnh báo như ${outcomeCardName} cho thấy vẫn còn những yếu tố rủi ro, góc khuất hoặc thông tin sai lệch mà bạn chưa nhìn thấy hết.`;
+      keyDecision = `Hãy tạm hoãn việc đưa ra quyết định cuối cùng, dành thời gian rà soát lại toàn bộ kế hoạch và bảo vệ vị thế an toàn.`;
+    } else if (isLove) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CẦN KHOẢNG LẶNG ĐỂ TỰ CHỮA LÀNH & TỰ SOI CHIẾU`;
+      coreReason = `Giữa hai người đang có sự tắc nghẽn cảm xúc hoặc bất đồng quan điểm chưa được giải tỏa. Sự nóng vội thúc ép lúc này chỉ khiến mâu thuẫn thêm trầm trọng.`;
+      keyDecision = `Lùi lại một bước, tôn trọng không gian riêng của đối phương và học cách chữa lành nội tâm của chính bạn trước.`;
+    } else if (isCareer) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: NÊN CỦNG CỐ NỘI LỰC, TRÁNH MẠO HIỂM NHẢY VIỆC`;
+      coreReason = `Môi trường mới hoặc định hướng mới tiềm ẩn nhiều áp lực và bất ổn ngoài dự tính ban đầu. Vị thế hiện tại vẫn là nơi an toàn hơn để bạn tích lũy kinh nghiệm.`;
+      keyDecision = `Tập trung làm tốt công việc hiện tại, củng cố mối quan hệ đồng nghiệp và trau dồi thêm kỹ năng trước khi tìm bến đỗ mới.`;
+    } else if (isFinance) {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: NGUY CƠ HAO TỔN TÀI CHÍNH – CẦN GIỮ VỐN AN TOÀN`;
+      coreReason = `Thời điểm này thị trường hoặc dự án có nhiều biến động khó lường, dễ rơi vào cảnh thất thoát hoặc vướng mắc giấy tờ pháp lý.`;
+      keyDecision = `Siết chặt chi tiêu, bảo toàn tiền mặt và tuyệt đối không vay mượn để đầu tư mạo hiểm.`;
+    } else {
+      verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CẦN THẬN TRỌNG & TẠM HOÃN HÀNH ĐỘNG`;
+      coreReason = `Năng lượng xung quanh đang có sự xung đột hoặc dồn nén. Cần bình tâm quan sát thay vì phản ứng cảm tính.`;
+      keyDecision = `Tĩnh tâm định hướng lại mục tiêu, tìm kiếm lời khuyên từ người có chuyên môn sâu.`;
+    }
+
+    whatToAvoid = `Tuyệt đối tránh đưa ra quyết định hệ trọng trong lúc tức giận, thất vọng hoặc khi bị thúc ép bởi người khác. Không hành động theo cảm tính.`;
+    timingAdvice = `Nên đợi ít nhất 1 chu kỳ trăng (khoảng 3 đến 4 tuần) để các dữ kiện thật sự phơi bày trước khi hành động.`;
+  } else {
+    confidenceLevel = 'Chuyển Biến Tùy Thuộc Vào Quyết Định Của Bạn';
+    signalColor = 'yellow';
+    signalLabel = 'Tín Hiệu Đèn Vàng: Cần Cân Nhắc Chiến Lược';
+
+    verdict = `CÂU TRẢ LỜI TRỌNG TÂM: CƠ HỘI & THỬ THÁCH SONG HÀNH (Khả năng thuận lợi ~${favorablePercent}%)`;
+    coreReason = `Tình thế đang ở thế cân bằng động. Kết quả cuối cùng không phụ thuộc vào may rủi mà hoàn toàn phụ thuộc vào sự tỉnh táo và khả năng thích ứng của chính bạn.`;
+    keyDecision = `Nếu bạn sẵn sàng dẹp bỏ thói quen cũ, lập kế hoạch chi tiết và giữ vững sự kiên định thì tình hình sẽ xoay chuyển rất tích cực.`;
+    whatToAvoid = `Tránh tâm lý 'được ăn cả ngã về không'. Cần có phương án dự phòng cho mọi tình huống xấu nhất.`;
+    timingAdvice = `Khoảng 4 đến 6 tuần tới sẽ là thời điểm then chốt để thử nghiệm bước đi đầu tiên.`;
+  }
+
+  // Compose direct targeted analysis
+  const directAnswerSummary = `Trả lời trực diện cho câu hỏi của bạn: "${qClean}"
+
+1. PHÁN QUYẾT RÕ RÀNG VỀ BĂN KHOĂN CỦA BẠN:
+Vũ trụ thông qua các lá bài đưa ra thông điệp thẳng thắn: ${coreReason} 
+Điều bạn đang trăn trở bắt nguồn từ hiện trạng được phản ánh qua lá ${leadCardName}. Bạn không nên nhìn nhận vấn đề này qua lăng kính lo âu mù quáng, mà cần tập trung vào thực tế khách quan.
+
+2. CÁC YẾU TỐ TÁC ĐỘNG TRỰC TIẾP ĐẾN KẾT QUẢ:
+Lá bài kết quả ${outcomeCardName} khẳng định: ${
+    outcomeCard.isReversed
+      ? `Nếu bạn tiếp tục giữ lối mòn cũ hoặc né tránh đối thoại, trở ngại sẽ kéo dài. Chỉ thị hành động: ${outcomeCard.card.reversed.advice}`
+      : `Nếu bạn chủ động nắm bắt cơ hội với tâm thế tích cực, thành quả sẽ tới rất tự nhiên. Chỉ thị hành động: ${outcomeCard.card.upright.advice}`
+  }
+
+3. LỜI KHUYÊN DỨT KHOÁT:
+${keyDecision}`;
 
   return {
     verdict,
     confidenceLevel,
+    signalColor,
+    signalLabel,
+    coreReason,
     directAnswerSummary,
     keyDecision,
+    whatToAvoid,
     timingAdvice
   };
 }
@@ -215,7 +247,7 @@ export function synthesizeReading(
   spreadType: SpreadType,
   drawnCards: DrawnCard[]
 ): ReadingResult['synthesis'] {
-  const cleanQ = question ? question.trim() : '';
+  const cleanQ = question ? question.trim() : 'Thông điệp dành cho tôi lúc này';
 
   // 1. Analyze Elements & Arcana balance
   const elementCounts: Record<string, number> = { Lửa: 0, Nước: 0, Khí: 0, Đất: 0 };
@@ -236,7 +268,6 @@ export function synthesizeReading(
   // Dominant element
   const dominantElement = Object.entries(elementCounts).sort((a, b) => b[1] - a[1])[0];
 
-  // 2. Formulate Elemental Balance Analysis
   let elementalSummary = '';
   if (dominantElement && dominantElement[1] > 0) {
     const elName = dominantElement[0];
@@ -257,22 +288,21 @@ export function synthesizeReading(
   }
 
   const arcanaNote = majorCount >= 2 
-    ? ` Sự xuất hiện của ${majorCount} lá Ẩn Chính (${majorRatio}% trải bài) cho thấy đây là một bước ngoặt nghiệp quả (karmic milestone) quan trọng mang tính định hình vận mệnh lâu dài của bạn.`
+    ? ` Sự xuất hiện của ${majorCount} lá Ẩn Chính (${majorRatio}% trải bài) cho thấy đây là một bước ngoặt nghiệp quả quan trọng mang tính định hình vận mệnh lâu dài của bạn.`
     : ` Tỷ lệ bài Ẩn Phụ cao cho thấy đây là vấn đề thực tế đời thường nằm trọn trong tầm kiểm soát và sự lựa chọn hàng ngày của bạn.`;
 
   const fullElementalBalance = `${elementalSummary}${arcanaNote}`;
 
-  // 3. Direct Question Verdict & Specific Alignment
+  // 2. Direct Question Verdict & Specific Alignment
   const directVerdict = generateDirectQuestionVerdict(cleanQ, topic, drawnCards);
 
-  // 4. Card-by-Card Question Relevance Analysis
+  // 3. Card-by-Card Question Relevance Analysis
   const cardQuestionAnalyses: CardQuestionAnalysis[] = drawnCards.map((dc) => {
     const card = dc.card;
     const isRev = dc.isReversed;
     const content = isRev ? card.reversed : card.upright;
     const posName = dc.position.nameVi;
 
-    // Pick contextual aspect
     let aspectMeaning = content.general;
     const qLower = cleanQ.toLowerCase();
     if (qLower.includes('tình') || qLower.includes('yêu') || topic.includes('Tình')) {
@@ -285,14 +315,13 @@ export function synthesizeReading(
       aspectMeaning = content.personalGrowth;
     }
 
-    // Compose tailored answer from this card to the user's question
     const qReference = cleanQ ? `câu hỏi "${cleanQ}"` : 'vấn đề bạn đang hỏi';
     
     let directExplanation = '';
     if (isRev) {
-      directExplanation = `Ứng vào ${qReference}, tại vị trí [${posName}], lá ${card.nameVi} (Ngược) cảnh báo rằng: ${card.reversed.keyMessage}. Bạn có thể đang gặp trở ngại bởi: ${card.reversed.blockedEnergy}. Khía cạnh liên quan mật thiết: ${aspectMeaning}`;
+      directExplanation = `Ứng thẳng vào ${qReference}, tại vị trí [${posName}], lá ${card.nameVi} (Ngược) cảnh báo: ${card.reversed.keyMessage}. Trở ngại chính nằm ở: ${card.reversed.blockedEnergy}. Khía cạnh liên hệ: ${aspectMeaning}`;
     } else {
-      directExplanation = `Ứng vào ${qReference}, tại vị trí [${posName}], lá ${card.nameVi} (Xuôi) mang thông điệp sáng tỏ: ${card.upright.keyMessage}. Đây là nguồn trợ lực quý giá giúp bạn: ${aspectMeaning}`;
+      directExplanation = `Ứng thẳng vào ${qReference}, tại vị trí [${posName}], lá ${card.nameVi} (Xuôi) mang lời giải đáp: ${card.upright.keyMessage}. Điểm tựa quan trọng cho bạn: ${aspectMeaning}`;
     }
 
     return {
@@ -305,7 +334,7 @@ export function synthesizeReading(
     };
   });
 
-  // 5. Formulate Overall Summary based on specific cards & positions
+  // 4. Formulate Overall Summary based on specific cards & positions
   let overallSummary = '';
   const firstCard = drawnCards[0];
   const lastCard = drawnCards[drawnCards.length - 1];
@@ -328,11 +357,10 @@ export function synthesizeReading(
   } else if (spreadType === 'career-five') {
     overallSummary = `Trong tiến trình sự nghiệp ${questionContext}, hiện trạng của bạn được neo giữ bởi ${firstCard.card.nameVi}, điểm tựa vững chắc nhất là năng lượng từ ${drawnCards[1].card.nameVi}. Dù đối diện với rào cản ở vị trí ${drawnCards[2].card.nameVi}, cánh cửa cơ hội đột phá đang hé mở qua ${drawnCards[3].card.nameVi} và lời khuyên chiến lược tại ${lastCard.card.nameVi}.`;
   } else {
-    // Celtic Cross
     overallSummary = `Bức tranh Thập Tự Celtic ${questionContext} phơi bày một cấu trúc năng lượng đa tầng sâu sắc. Trọng tâm hiện tại ${firstCard.card.nameVi} đang tương tác trực diện với thử thách ${drawnCards[1].card.nameVi}. Nền tảng quá khứ sâu kín từ ${drawnCards[2].card.nameVi} đang thúc đẩy nhận thức ${drawnCards[4].card.nameVi}, hướng tới điểm đến vĩ mô kết tinh tại lá thứ 10: ${lastCard.card.nameVi} (${lastCard.isReversed ? 'ngược' : 'xuôi'}).`;
   }
 
-  // 6. Formulate Core Dynamics & Inter-card relationships
+  // 5. Core Dynamics
   const dynamicsList: string[] = [];
   if (reversedCount > 0) {
     dynamicsList.push(`Có ${reversedCount}/${totalCards} lá xuất hiện ở trạng thái Ngược, nhắc nhở bạn rằng những trở ngại liên quan đến câu hỏi này chủ yếu xuất phát từ sự tắc nghẽn tâm lý bên trong, nỗi sợ vô thức hoặc việc kháng cự lại sự thay đổi tự nhiên hơn là do ngoại cảnh hoàn toàn chi phối.`);
@@ -346,7 +374,7 @@ export function synthesizeReading(
 
   const coreDynamics = dynamicsList.join(' ');
 
-  // 7. Formulate Actionable Advice
+  // 6. Actionable Advice
   const adviceParts: string[] = [];
   const primaryAdviceCard = drawnCards[drawnCards.length - 1];
   const adviceText = primaryAdviceCard.isReversed
@@ -354,13 +382,13 @@ export function synthesizeReading(
     : primaryAdviceCard.card.upright.advice;
 
   adviceParts.push(`1. Quyết định trọng tâm: ${directVerdict.keyDecision}`);
-  adviceParts.push(`2. Lắng nghe thông điệp thực tiễn từ lá ${primaryAdviceCard.card.nameVi}: ${adviceText}`);
-  adviceParts.push(`3. Về mặt tâm lý: Tôn trọng quyền tự do ý chí và cảm xúc chân thật của bạn. Đừng đưa ra quyết định hệ trọng trong lúc nóng vội hay khi tâm trí đang dao động.`);
-  adviceParts.push(`4. Về mặt thời điểm: ${directVerdict.timingAdvice}`);
+  adviceParts.push(`2. Điều cấm kỵ cần tránh: ${directVerdict.whatToAvoid}`);
+  adviceParts.push(`3. Lắng nghe thông điệp thực tiễn từ lá ${primaryAdviceCard.card.nameVi}: ${adviceText}`);
+  adviceParts.push(`4. Về mặt thời điểm hành động: ${directVerdict.timingAdvice}`);
 
   const actionableAdvice = adviceParts.join('\n\n');
 
-  // 8. Gather Reflection Prompts
+  // 7. Reflection Prompts
   const reflectionPrompts: string[] = [];
   drawnCards.slice(0, 3).forEach((dc) => {
     if (dc.card.reflectionQuestions && dc.card.reflectionQuestions.length > 0) {

@@ -60,7 +60,7 @@ export interface SpreadPosition {
   name: string;
   nameVi: string;
   descriptionVi: string;
-  x?: number; // relative coordinate for layout
+  x?: number;
   y?: number;
 }
 
@@ -93,9 +93,13 @@ export interface CardQuestionAnalysis {
 export interface DirectQuestionVerdict {
   verdict: string; // e.g. "CÂU TRẢ LỜI: RẤT KHẢ QUAN & THUẬN LỢI (85%)"
   confidenceLevel: string; // "Rất Thuận Lợi" | "Cần Thận Trọng" | "Nên Chuyển Hướng" | "Thời Cơ Chín Muồi"
-  directAnswerSummary: string; // 2-3 đoạn văn trả lời trực diện vào băn khoăn của người hỏi
-  keyDecision: string; // Lời khuyên quyết định then chốt
-  timingAdvice: string; // Thời điểm hoặc chu kỳ thích hợp
+  signalColor: 'green' | 'yellow' | 'red';
+  signalLabel: string;
+  coreReason: string; // Lý do cốt lõi tại sao đưa ra kết luận này
+  directAnswerSummary: string; // Đoạn phân tích sắc bén trả lời thẳng vào câu hỏi
+  keyDecision: string; // Quyết định then chốt
+  whatToAvoid: string; // Điều cấm kỵ / Cần tránh tuyệt đối
+  timingAdvice: string; // Thời điểm hành động tối ưu
 }
 
 export interface ReadingSynthesis {

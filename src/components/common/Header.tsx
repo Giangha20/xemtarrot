@@ -18,7 +18,13 @@ import {
   Info,
   Moon,
   ChevronRight,
-  Flame
+  ChevronDown,
+  Heart,
+  Briefcase,
+  Eye,
+  Star,
+  CheckCircle2,
+  Home
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -26,6 +32,7 @@ export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(() => (typeof window !== 'undefined' ? sound.getIsMuted() : true));
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(() => (typeof window !== 'undefined' ? sound.getIsAmbientPlaying() : false));
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>('tarot');
 
   const toggleSoundMute = () => {
     const nextMuted = !isMuted;
@@ -45,6 +52,10 @@ export const Header: React.FC = () => {
     }
   };
 
+  const toggleSubmenu = (key: string) => {
+    setOpenSubmenu((prev) => (prev === key ? null : key));
+  };
+
   const navLinks = [
     { href: '/', label: 'Trang Chủ' },
     { href: '/reading', label: 'Xem Trải Bài Tarot', highlight: true },
@@ -56,13 +67,16 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#100B1D]/95 border-b border-[#D8B56D]/20 transition-all">
+    <header className="sticky top-0 z-50 w-full bg-[#0E061D] border-b border-[#D8B56D]/30 transition-all shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
           href="/"
           className="flex items-center gap-2.5 group"
-          onClick={() => sound.playChime(528)}
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            sound.playChime(528);
+          }}
         >
           <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#24143F] to-[#4C2882] border-2 border-[#D8B56D] flex items-center justify-center shadow-[0_0_15px_rgba(216,181,109,0.35)] group-hover:shadow-[0_0_25px_rgba(216,181,109,0.6)] transition-all">
             <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[#D8B56D] group-hover:rotate-45 transition-transform duration-500" />
@@ -138,7 +152,7 @@ export const Header: React.FC = () => {
           {/* Mobile Menu Hamburger Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2.5 rounded-xl bg-[#1A102E] border-2 border-[#D8B56D]/50 text-[#D8B56D] hover:bg-[#24143F] focus:outline-none shadow-lg"
+            className="lg:hidden p-2.5 rounded-xl bg-[#1A102E] border-2 border-[#D8B56D]/60 text-[#D8B56D] hover:bg-[#24143F] focus:outline-none shadow-lg active:scale-95 transition-transform"
             aria-label="Mở menu điều hướng"
           >
             {isMobileMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6" />}
@@ -146,113 +160,390 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* MOBILE DRAWER MENU - 100% HOÀN TOÀN ĐẶC, KHÔNG TRONG SUỐT, KHÔNG BỊ CHỮ DƯỚI XUYÊN QUA */}
+      {/* MOBILE MENU DROPDOWN - HOÀN TOÀN TỰ NHIÊN TRONG DÒNG CHẢY, 100% ĐẶC, KHÔNG TRONG SUỐT, ĐẦY ĐỦ CÁC MỤC CON */}
       {isMobileMenuOpen && (
-        <>
-          {/* Lớp nền đen che toàn bộ trang phía dưới để triệt tiêu mọi chữ/ảnh xuyên qua */}
+        <div
+          className="lg:hidden w-full border-t-2 border-[#D8B56D]/40 shadow-[0_20px_50px_rgba(0,0,0,0.95)] max-h-[82vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200"
+          style={{ backgroundColor: '#090414', opacity: 1 }}
+        >
+          {/* Top Bar inside Menu */}
           <div
-            className="lg:hidden fixed inset-0 z-40 bg-black/95"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-
-          {/* Menu Drawer chính với nền đặc tuyệt đối #090414 */}
-          <div
-            className="lg:hidden fixed inset-x-0 top-16 sm:top-20 bottom-0 z-50 flex flex-col justify-between border-t-2 border-[#D8B56D] shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-y-auto"
-            style={{ backgroundColor: '#090414', opacity: 1 }}
+            className="px-4 py-3 flex items-center justify-between border-b border-white/10 sticky top-0 z-10"
+            style={{ backgroundColor: '#130A24' }}
           >
-            {/* Header row in mobile menu */}
-            <div
-              className="px-5 py-3.5 flex items-center justify-between border-b border-white/10"
-              style={{ backgroundColor: '#130A24' }}
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#D8B56D]" />
-                <span className="text-xs uppercase tracking-wider font-serif font-black text-[#D8B56D]">
-                  DANH MỤC TRẢI BÀI & TỬ VI
-                </span>
-              </div>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-xs text-white hover:text-amber-300 px-3 py-1.5 rounded-lg border border-white/20 font-bold"
-                style={{ backgroundColor: '#24143F' }}
-              >
-                Đóng ✕
-              </button>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#D8B56D]" />
+              <span className="text-xs uppercase tracking-wider font-serif font-black text-[#D8B56D]">
+                DANH MỤC TRẢI BÀI & TỬ VI
+              </span>
             </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-xs text-white hover:text-amber-300 px-3 py-1.5 rounded-lg border border-white/20 font-bold active:scale-95 transition-transform"
+              style={{ backgroundColor: '#24143F' }}
+            >
+              Đóng ✕
+            </button>
+          </div>
 
-            {/* Links list */}
-            <nav className="p-4 flex flex-col gap-2.5 flex-1">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
-                return (
+          <div className="p-4 flex flex-col gap-3">
+            {/* NHÓM 1: XEM TRẢI BÀI TAROT & CÁC MỤC CON */}
+            <div className="rounded-xl border border-[#D8B56D]/40 overflow-hidden" style={{ backgroundColor: '#140A24' }}>
+              <div className="p-3 flex items-center justify-between bg-gradient-to-r from-[#24143F] to-[#1A0E2E] border-b border-[#D8B56D]/20">
+                <Link
+                  href="/reading"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    sound.playChime(580);
+                  }}
+                  className="flex items-center gap-2.5 flex-1"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#D8B56D] text-[#100B1D] flex items-center justify-center font-bold">
+                    <Compass className="w-5 h-5 text-[#100B1D]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-[#F5F0FF] flex items-center gap-1.5">
+                      Xem Trải Bài Tarot
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#D8B56D] text-black font-extrabold uppercase">
+                        BẮT ĐẦU
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300">5 phương pháp trải bài chuyên sâu</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => toggleSubmenu('tarot')}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-[#D8B56D]"
+                  aria-label="Thu gọn/mở rộng mục con Tarot"
+                >
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu === 'tarot' ? 'rotate-180 text-amber-400' : 'text-slate-400'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* CÁC MỤC CON CỦA TRẢI BÀI TAROT */}
+              {openSubmenu === 'tarot' && (
+                <div className="p-2.5 flex flex-col gap-1.5 bg-[#0C0617]">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 px-2 py-0.5 tracking-wider">
+                    Các kiểu trải bài (Mục con):
+                  </p>
+
                   <Link
-                    key={link.href}
-                    href={link.href}
+                    href="/reading?spread=one-card"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       sound.playChime(580);
                     }}
-                    style={{
-                      backgroundColor: isActive ? '#2D164F' : link.isNew ? '#221138' : '#140A24',
-                      opacity: 1
-                    }}
-                    className={`p-3.5 rounded-xl text-sm font-medium flex items-center justify-between border-2 transition-all ${
-                      isActive
-                        ? 'text-[#D8B56D] border-[#D8B56D] shadow-lg font-bold'
-                        : link.highlight
-                        ? 'text-[#F5F0FF] border-[#D8B56D]/70 font-semibold shadow-md'
-                        : link.isNew
-                        ? 'text-amber-300 border-amber-500/60 font-semibold shadow-md'
-                        : 'border-white/10 text-slate-100 hover:border-[#D8B56D]/40'
-                    }`}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#D8B56D]/30 flex items-center justify-between text-xs text-slate-200"
                   >
-                    <div className="flex items-center gap-3">
-                      {link.href === '/' && <Sparkles className="w-5 h-5 text-[#D8B56D]" />}
-                      {link.href === '/reading' && <Compass className="w-5 h-5 text-[#D8B56D]" />}
-                      {link.href === '/tu-vi' && <Moon className="w-5 h-5 text-amber-400" />}
-                      {link.href === '/cards' && <Layers className="w-5 h-5 text-[#A78BFA]" />}
-                      {link.href === '/knowledge' && <BookOpen className="w-5 h-5 text-sky-400" />}
-                      {link.href === '/history' && <Clock className="w-5 h-5 text-emerald-400" />}
-                      {link.href === '/about' && <Info className="w-5 h-5 text-amber-300" />}
-                      <span className="text-sm font-semibold">{link.label}</span>
-                    </div>
-
                     <div className="flex items-center gap-2">
-                      {link.isNew && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-black font-extrabold uppercase shadow-sm">
-                          MỚI
-                        </span>
-                      )}
-                      {link.highlight && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D8B56D] text-[#100B1D] font-bold">
-                          BẮT ĐẦU
-                        </span>
-                      )}
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>Trải Bài 1 Lá — Thông điệp & Lời khuyên nhanh</span>
                     </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                   </Link>
-                );
-              })}
-            </nav>
 
-            {/* Bottom Footer box */}
+                  <Link
+                    href="/reading?spread=three-card"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#D8B56D]/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-sky-400" />
+                      <span>Trải Bài 3 Lá — Quá khứ • Hiện tại • Tương lai</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/reading?spread=love-five"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#D8B56D]/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-rose-400" />
+                      <span>Trải Bài Tình Yêu & Mối Quan Hệ (4 lá)</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/reading?spread=career-five"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#D8B56D]/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-emerald-400" />
+                      <span>Trải Bài Công Việc & Sự Nghiệp (5 lá)</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/reading?spread=celtic-cross"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#D8B56D]/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-purple-400" />
+                      <span>Trải Bài Celtic Cross (10 lá toàn diện)</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* NHÓM 2: XEM TỬ VI ĐẨU SỐ & CÁC MỤC CON */}
+            <div className="rounded-xl border border-amber-500/50 overflow-hidden" style={{ backgroundColor: '#140A24' }}>
+              <div className="p-3 flex items-center justify-between bg-gradient-to-r from-[#291709]/40 via-[#24143F] to-[#1A0E2E] border-b border-amber-500/30">
+                <Link
+                  href="/tu-vi"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    sound.playChime(580);
+                  }}
+                  className="flex items-center gap-2.5 flex-1"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-600 to-amber-400 text-black flex items-center justify-center font-bold">
+                    <Moon className="w-5 h-5 text-black" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-amber-300 flex items-center gap-1.5">
+                      Xem Tử Vi Đẩu Số
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-black font-extrabold uppercase">
+                        MỚI
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300">Lập lá số & bình giải 12 cung số</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => toggleSubmenu('tuvi')}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-amber-400"
+                  aria-label="Thu gọn/mở rộng mục con Tử Vi"
+                >
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu === 'tuvi' ? 'rotate-180 text-amber-400' : 'text-slate-400'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* CÁC MỤC CON CỦA TỬ VI ĐẨU SỐ */}
+              {openSubmenu === 'tuvi' && (
+                <div className="p-2.5 flex flex-col gap-1.5 bg-[#0C0617]">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 px-2 py-0.5 tracking-wider">
+                    Chức năng Tử Vi (Mục con):
+                  </p>
+
+                  <Link
+                    href="/tu-vi"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-amber-500/40 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-amber-400" />
+                      <span>Lập Lá Số Tử Vi Mệnh Bàn Trọn Đời</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/tu-vi"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-amber-500/40 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Luận Giải 12 Cung (Mệnh, Thân, Tài, Quan...)</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/tu-vi"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-amber-500/40 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-sky-400" />
+                      <span>14 Chính Tinh & Bảng Đắc Hãm Chiếu Mệnh</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* NHÓM 3: BỘ BÀI 78 LÁ & KIẾN THỨC TAROT */}
+            <div className="rounded-xl border border-white/10 overflow-hidden" style={{ backgroundColor: '#140A24' }}>
+              <div className="p-3 flex items-center justify-between bg-gradient-to-r from-[#1A0E2E] to-[#140A24] border-b border-white/10">
+                <Link
+                  href="/cards"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    sound.playChime(580);
+                  }}
+                  className="flex items-center gap-2.5 flex-1"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#24143F] border border-[#A78BFA]/50 text-[#A78BFA] flex items-center justify-center font-bold">
+                    <Layers className="w-5 h-5 text-[#A78BFA]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-[#F5F0FF]">Bộ Bài 78 Lá & Kiến Thức</div>
+                    <p className="text-[11px] text-slate-300">Hình ảnh thật Rider-Waite 1909</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => toggleSubmenu('cards')}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300"
+                  aria-label="Thu gọn/mở rộng mục con Bộ Bài"
+                >
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu === 'cards' ? 'rotate-180 text-amber-400' : 'text-slate-400'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* CÁC MỤC CON CỦA BỘ BÀI & KIẾN THỨC */}
+              {openSubmenu === 'cards' && (
+                <div className="p-2.5 flex flex-col gap-1.5 bg-[#0C0617]">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 px-2 py-0.5 tracking-wider">
+                    Tra cứu & Tìm hiểu (Mục con):
+                  </p>
+
+                  <Link
+                    href="/cards"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-[#A78BFA]/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-[#A78BFA]" />
+                      <span>Tra Cứu Toàn Bộ 78 Lá Bài Thật RWS</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+
+                  <Link
+                    href="/knowledge"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      sound.playChime(580);
+                    }}
+                    className="p-2 rounded-lg hover:bg-white/5 border border-white/5 hover:border-sky-500/30 flex items-center justify-between text-xs text-slate-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-sky-400" />
+                      <span>Cẩm Nang & Ý Nghĩa Biểu Tượng Tarot</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* NHÓM 4: CÁC TRANG TRỰC TIẾP KHÁC */}
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <Link
+                href="/"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  sound.playChime(580);
+                }}
+                className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1 transition-all ${
+                  pathname === '/'
+                    ? 'border-[#D8B56D] bg-[#24143F] text-[#D8B56D]'
+                    : 'border-white/10 bg-[#140A24] text-slate-200 hover:border-white/20'
+                }`}
+              >
+                <Home className="w-4 h-4 text-[#D8B56D]" />
+                <span className="text-[11px] font-bold">Trang Chủ</span>
+              </Link>
+
+              <Link
+                href="/history"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  sound.playChime(580);
+                }}
+                className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1 transition-all ${
+                  pathname === '/history'
+                    ? 'border-[#D8B56D] bg-[#24143F] text-[#D8B56D]'
+                    : 'border-white/10 bg-[#140A24] text-slate-200 hover:border-white/20'
+                }`}
+              >
+                <Clock className="w-4 h-4 text-emerald-400" />
+                <span className="text-[11px] font-bold">Lịch Sử</span>
+              </Link>
+
+              <Link
+                href="/about"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  sound.playChime(580);
+                }}
+                className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1 transition-all ${
+                  pathname === '/about'
+                    ? 'border-[#D8B56D] bg-[#24143F] text-[#D8B56D]'
+                    : 'border-white/10 bg-[#140A24] text-slate-200 hover:border-white/20'
+                }`}
+              >
+                <Info className="w-4 h-4 text-amber-300" />
+                <span className="text-[11px] font-bold">Giới Thiệu</span>
+              </Link>
+            </div>
+
+            {/* Bottom Footer Box */}
             <div
-              className="p-4 mx-4 mb-5 rounded-2xl border border-[#D8B56D]/40 text-center"
+              className="p-3.5 rounded-xl border border-[#D8B56D]/30 text-center mt-1"
               style={{ backgroundColor: '#130A24' }}
             >
-              <p className="text-xs text-slate-200 font-serif italic mb-2">
+              <p className="text-xs text-slate-200 font-serif italic mb-1.5">
                 "Mỗi lá bài là một câu chuyện. Mỗi lá số là một thiên mệnh."
               </p>
-              <div className="flex flex-wrap justify-center gap-3 text-xs text-[#A78BFA] font-medium">
-                <span>✦ Tarot 78 Lá</span>
+              <div className="flex flex-wrap justify-center gap-2.5 text-[11px] text-[#A78BFA] font-medium">
+                <span>✦ 78 Lá RWS Thật</span>
                 <span>•</span>
                 <span>✦ Tử Vi 12 Cung</span>
                 <span>•</span>
                 <span>✦ Miễn Phí 100%</span>
+                <span>•</span>
+                <span className="text-emerald-400">✦ Hỗ Trợ Offline</span>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </header>
   );

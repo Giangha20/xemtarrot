@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ReadingResult, ReadingStep, SpreadType, DrawnCard } from '@/types/tarot';
 import { synthesizeReading } from '@/lib/tarotEngine';
 import { saveReadingToHistory, toggleFavoriteReading, getUserPreferences } from '@/lib/storage';
@@ -11,7 +12,8 @@ import { Step4Draw } from '@/components/reading/Step4Draw';
 import { Step5Interpretation } from '@/components/reading/Step5Interpretation';
 import { Starfield } from '@/components/common/Starfield';
 
-export default function ReadingPage() {
+function ReadingInner() {
+  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState<ReadingStep>('question');
   const [question, setQuestion] = useState('');
   const [topic, setTopic] = useState('Tổng quát');
@@ -20,6 +22,23 @@ export default function ReadingPage() {
     return getUserPreferences().allowReversed;
   });
   const [readingResult, setReadingResult] = useState<ReadingResult | null>(null);
+
+  useEffect(() => {
+    const s = searchParams.get('spread');
+    if (s) {
+      if (s === 'one-card' || s === 'three-card' || s === 'love-five' || s === 'career-five' || s === 'celtic-cross') {
+        setSpreadType(s as SpreadType);
+        if (s === 'love-five') setTopic('Tình cảm');
+        else if (s === 'career-five') setTopic('Công việc');
+      } else if (s === 'love-relationship') {
+        setSpreadType('love-five');
+        setTopic('Tình cảm');
+      } else if (s === 'career-path') {
+        setSpreadType('career-five');
+        setTopic('Công việc');
+      }
+    }
+  }, [searchParams]);
 
   // Step 1: Set intention and proceed to meditation focus
   const handleSetIntention = (q: string, t: string) => {
@@ -60,20 +79,25 @@ export default function ReadingPage() {
   // Step 5: Start new reading
   const handleNewReading = () => {
     setQuestion('');
-    setTopic('Tổng quát');
     setReadingResult(null);
     setCurrentStep('question');
   };
 
-  const handleToggleFavorite = (id: string) => {
-    toggleFavoriteReading(id);
+  // Toggle favorite in history
+  const handleToggleFavorite = () => {
+    if (!readingResult) return;
+    toggleFavoriteReading(readingResult.id);
+    setReadingResult({
+      ...readingResult,
+      isFavorite: !readingResult.isFavorite
+    });
   };
 
   return (
-    <div className="relative min-h-screen py-8 sm:py-12 px-4 sm:px-6">
+    <div className="relative min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center py-8 sm:py-12 px-4 overflow-hidden">
       <Starfield />
 
-      <main className="relative z-10 max-w-6xl mx-auto">
+      <main className="relative z-10 w-full flex flex-col items-center">
         {currentStep === 'question' && (
           <Step1Question
             question={question}
@@ -120,5 +144,13 @@ export default function ReadingPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ReadingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#100B1D]" />}>
+      <ReadingInner />
+    </Suspense>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { sound } from '@/lib/sound';
+import { sound, AMBIENT_TRACKS, AmbientTrack } from '@/lib/sound';
 import {
   Sparkles,
   Volume2,
@@ -24,15 +24,28 @@ import {
   Eye,
   Star,
   CheckCircle2,
-  Home
+  Home,
+  Check
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(() => (typeof window !== 'undefined' ? sound.getIsMuted() : true));
+  const [isMuted, setIsMuted] = useState(() => (typeof window !== 'undefined' ? sound.getIsMuted() : false));
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(() => (typeof window !== 'undefined' ? sound.getIsAmbientPlaying() : false));
+  const [currentTrack, setCurrentTrack] = useState<AmbientTrack>(() => sound.getCurrentTrack());
+  const [isTrackPickerOpen, setIsTrackPickerOpen] = useState(false);
+  const [volume, setVolume] = useState(() => sound.getVolume());
   const [openSubmenu, setOpenSubmenu] = useState<string | null>('tarot');
+
+  useEffect(() => {
+    return sound.subscribe(() => {
+      setIsMuted(sound.getIsMuted());
+      setIsAmbientPlaying(sound.getIsAmbientPlaying());
+      setCurrentTrack(sound.getCurrentTrack());
+      setVolume(sound.getVolume());
+    });
+  }, []);
 
   const toggleSoundMute = () => {
     const nextMuted = !isMuted;
@@ -50,6 +63,14 @@ export const Header: React.FC = () => {
       sound.setMuted(false);
       setIsMuted(false);
     }
+  };
+
+  const handleSelectTrack = (trackId: string) => {
+    sound.setTrack(trackId);
+    if (!isAmbientPlaying) {
+      sound.startAmbient(trackId);
+    }
+    sound.playChime(640);
   };
 
   const toggleSubmenu = (key: string) => {
@@ -122,19 +143,115 @@ export const Header: React.FC = () => {
 
         {/* Sound Controls & Mobile Hamburger */}
         <div className="flex items-center gap-2">
-          {/* Ambient Music Toggle */}
-          <button
-            onClick={toggleAmbientMusic}
-            title={isAmbientPlaying ? 'Tắt nhạc thiền ambient' : 'Bật nhạc thiền ambient'}
-            className={`p-2 rounded-full border transition-all text-xs flex items-center gap-1.5 ${
-              isAmbientPlaying
-                ? 'bg-[#24143F] border-[#D8B56D] text-[#D8B56D] shadow-[0_0_12px_rgba(216,181,109,0.4)] animate-pulse'
-                : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
-            }`}
-          >
-            <Music className="w-4 h-4" />
-            <span className="hidden md:inline text-[11px] font-sans">Nhạc Thiền</span>
-          </button>
+          {/* Ambient Music Toggle & Track Picker */}
+          <div className="relative flex items-center">
+            <button
+              onClick={toggleAmbientMusic}
+              title={isAmbientPlaying ? 'Tắt nhạc thiền' : 'Bật nhạc thiền phòng thu'}
+              className={`p-2 rounded-l-full border-y border-l transition-all text-xs flex items-center gap-1.5 ${
+                isAmbientPlaying
+                  ? 'bg-[#24143F] border-[#D8B56D] text-[#D8B56D] shadow-[0_0_12px_rgba(216,181,109,0.4)]'
+                  : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+              }`}
+            >
+              <Music className={`w-4 h-4 ${isAmbientPlaying ? 'animate-bounce text-amber-400' : ''}`} />
+              <span className="hidden md:inline text-[11px] font-sans">
+                {isAmbientPlaying ? currentTrack.nameVi.split(' ')[2] || 'Nhạc Thiền' : 'Nhạc Thiền'}
+              </span>
+            </button>
+            <button
+              onClick={() => setIsTrackPickerOpen(!isTrackPickerOpen)}
+              title="Đổi bài nhạc thiền & điều chỉnh âm lượng"
+              className={`p-2 pr-2.5 rounded-r-full border transition-all text-xs ${
+                isAmbientPlaying
+                  ? 'bg-[#24143F] border-[#D8B56D] text-[#D8B56D]'
+                  : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+              }`}
+            >
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isTrackPickerOpen ? 'rotate-180 text-amber-300' : ''
+                }`}
+              />
+            </button>
+
+            {/* Desktop Track Picker Popover */}
+            {isTrackPickerOpen && (
+              <div
+                className="absolute right-0 top-full mt-2 w-80 rounded-2xl border-2 border-[#D8B56D]/50 p-3.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                style={{ backgroundColor: '#0D061A' }}
+              >
+                <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-2.5">
+                  <span className="text-xs font-bold text-[#D8B56D] font-serif uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> Chọn Nhạc Thiền Tĩnh Tâm
+                  </span>
+                  <button
+                    onClick={() => setIsTrackPickerOpen(false)}
+                    className="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded border border-white/10"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-1.5 mb-3">
+                  {AMBIENT_TRACKS.map((track) => {
+                    const isCurrent = currentTrack.id === track.id;
+                    return (
+                      <button
+                        key={track.id}
+                        onClick={() => handleSelectTrack(track.id)}
+                        className={`p-2.5 rounded-xl text-left border flex items-center justify-between transition-all ${
+                          isCurrent
+                            ? 'border-[#D8B56D] bg-[#24143F] text-[#D8B56D] shadow-md font-bold'
+                            : 'border-white/5 bg-white/5 text-slate-300 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-lg">{track.icon}</span>
+                          <div>
+                            <div className="text-xs font-semibold leading-snug">{track.nameVi}</div>
+                            <div className="text-[10px] text-slate-400 font-normal leading-snug line-clamp-1">
+                              {track.description}
+                            </div>
+                          </div>
+                        </div>
+                        {isCurrent && (
+                          <div className="flex items-center gap-1 text-emerald-400">
+                            {isAmbientPlaying && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />}
+                            <Check className="w-4 h-4 text-emerald-400" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Volume Slider */}
+                <div className="pt-2 border-t border-white/10">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                    <span>Âm lượng nhạc</span>
+                    <span>{Math.round(volume * 100)}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={volume}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        setVolume(v);
+                        sound.setVolume(v);
+                      }}
+                      className="w-full accent-[#D8B56D] h-1.5 bg-white/10 rounded-lg cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Master Sound FX Mute Toggle */}
           <button
@@ -163,7 +280,7 @@ export const Header: React.FC = () => {
       {/* MOBILE MENU DROPDOWN - HOÀN TOÀN TỰ NHIÊN TRONG DÒNG CHẢY, 100% ĐẶC, KHÔNG TRONG SUỐT, ĐẦY ĐỦ CÁC MỤC CON */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden w-full border-t-2 border-[#D8B56D]/40 shadow-[0_20px_50px_rgba(0,0,0,0.95)] max-h-[82vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200"
+          className="lg:hidden w-full border-t-2 border-[#D8B56D]/40 shadow-[0_20px_50px_rgba(0,0,0,0.95)] max-h-[84vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200"
           style={{ backgroundColor: '#090414', opacity: 1 }}
         >
           {/* Top Bar inside Menu */}
@@ -187,6 +304,60 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="p-4 flex flex-col gap-3">
+            {/* KHỐI TRÌNH PHÁT NHẠC THIỀN PHÒNG THU TRÊN MOBILE (CHUẨN ÂM HƯỞNG, KHÔNG RÈ) */}
+            <div
+              className="p-3.5 rounded-xl border border-[#D8B56D]/40 text-left"
+              style={{ backgroundColor: '#140A26' }}
+            >
+              <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Music className="w-4 h-4 text-[#D8B56D]" />
+                  <div>
+                    <span className="text-xs font-bold text-amber-300 font-serif uppercase tracking-wider block">
+                      Nhạc Thiền Tĩnh Tâm
+                    </span>
+                    <span className="text-[10px] text-slate-300">Âm thanh phòng thu êm dịu, không rè</span>
+                  </div>
+                </div>
+                <button
+                  onClick={toggleAmbientMusic}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-md active:scale-95 ${
+                    isAmbientPlaying
+                      ? 'bg-rose-900/90 text-rose-200 border border-rose-500/80 animate-pulse'
+                      : 'bg-[#D8B56D] text-black font-extrabold hover:bg-[#E8C882]'
+                  }`}
+                >
+                  {isAmbientPlaying ? 'Tắt Nhạc' : 'Bật Nhạc'}
+                </button>
+              </div>
+
+              {/* Danh sách 4 bản nhạc thiền */}
+              <div className="grid grid-cols-2 gap-2">
+                {AMBIENT_TRACKS.map((track) => {
+                  const isCurrent = currentTrack.id === track.id;
+                  return (
+                    <button
+                      key={track.id}
+                      onClick={() => handleSelectTrack(track.id)}
+                      className={`p-2.5 rounded-xl text-left border flex flex-col justify-between transition-all active:scale-95 ${
+                        isCurrent
+                          ? 'border-[#D8B56D] bg-[#2D164F] text-[#D8B56D] font-bold shadow-md'
+                          : 'border-white/10 bg-[#0C0617] text-slate-300 hover:border-[#D8B56D]/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="text-base">{track.icon}</span>
+                        <span className="text-xs font-semibold leading-tight line-clamp-1">{track.nameVi}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-normal line-clamp-1">
+                        {track.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* NHÓM 1: XEM TRẢI BÀI TAROT & CÁC MỤC CON */}
             <div className="rounded-xl border border-[#D8B56D]/40 overflow-hidden" style={{ backgroundColor: '#140A24' }}>
               <div className="p-3 flex items-center justify-between bg-gradient-to-r from-[#24143F] to-[#1A0E2E] border-b border-[#D8B56D]/20">
@@ -537,7 +708,7 @@ export const Header: React.FC = () => {
                 <span>•</span>
                 <span>✦ Tử Vi 12 Cung</span>
                 <span>•</span>
-                <span>✦ Miễn Phí 100%</span>
+                <span>✦ 4 Bản Nhạc Thiền</span>
                 <span>•</span>
                 <span className="text-emerald-400">✦ Hỗ Trợ Offline</span>
               </div>

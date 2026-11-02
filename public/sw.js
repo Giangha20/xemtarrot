@@ -1,5 +1,5 @@
 // MYSTIC TAROT - Service Worker for 100% Offline Support
-const CACHE_NAME = 'mystic-tarot-offline-v1';
+const CACHE_NAME = 'mystic-tarot-offline-v2';
 
 // Core routes and critical static assets to pre-cache immediately
 const PRECACHE_URLS = [
@@ -12,6 +12,10 @@ const PRECACHE_URLS = [
   '/about',
   '/manifest.json',
   '/favicon.ico',
+  '/audio/singing-bowl.mp3',
+  '/audio/temple.mp3',
+  '/audio/wind-chimes.mp3',
+  '/audio/meditation-piano.mp3',
   '/images/cards/ace-of-cups.jpg',
   '/images/cards/ace-of-pentacles.jpg',
   '/images/cards/ace-of-swords.jpg',
@@ -131,6 +135,23 @@ self.addEventListener('fetch', (event) => {
 
   // Ignore chrome-extension or external analytics
   if (url.origin !== self.location.origin && !url.hostname.includes('fonts.g')) {
+    return;
+  }
+
+  // Strategy Audio: Real Zen Meditation tracks -> Cache First
+  if (url.pathname.startsWith('/audio/')) {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkResponse;
+        });
+      })
+    );
     return;
   }
 
